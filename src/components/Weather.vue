@@ -48,20 +48,31 @@
         methods: {
             async getData(){
                 const url="http://api.weatherapi.com/v1/current.json?key="+this.api_key+"&q="+this.main_city;
-                const response = await axios.get(url)
+                try{
+                    const response = await axios.get(url)
+                    console.log(url)
+                    this.temp_cel  = response["data"]["current"]["temp_c"];
+                    this.temp_far  = response["data"]["current"]["temp_f"];
+                    this.feels  = response["data"]["current"]["feelslike_c"]
+                    this.location = response["data"]["location"]["country"];
+                    this.city = response["data"]["location"]["name"];
+                    this.date = response["data"]["current"]["last_updated"];
+                    this.desc = response["data"]["current"]["condition"]["text"];
+                    this.iconCode = response["data"]["current"]["condition"]["icon"];
+                    this.iconFile = weatherIcons.map((o) => o).indexOf(this.iconCode);
+                }catch(e){
+                    console.log(e);
+                    alert("Error: "+e.response.status+"\nMessage: "+e.response.data.error.message);
+                }
                 //const results = response.data.results
-                console.log(url)
-                this.temp_cel  = response["data"]["current"]["temp_c"];
-                this.temp_far  = response["data"]["current"]["temp_f"];
-                this.feels  = response["data"]["current"]["feelslike_c"]
-                this.location = response["data"]["location"]["country"];
-                this.city = response["data"]["location"]["name"];
-                this.date = response["data"]["current"]["last_updated"];
-                this.desc = response["data"]["current"]["condition"]["text"];
-                this.iconCode = response["data"]["current"]["condition"]["icon"];
-                this.iconFile = weatherIcons.map((o) => o).indexOf(this.iconCode);
+                
             }
-        }
+        },
+        created () {
+            setInterval(() => {
+                this.getData();
+            }, 1800000)
+}
     }
 </script>
 
